@@ -17,6 +17,8 @@ typedef struct MLP {
     double outputUnits[10];
 } MultiLayedPerceptron;
 
+void MLP_setup(MultiLayedPerceptron *MLP);
+
 void MLP_randomise(MultiLayedPerceptron *MLP);
 
 void MLP_forward(double i, MultiLayedPerceptron *MLP);
