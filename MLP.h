@@ -27,3 +27,5 @@ void MLP_forward(double i, MultiLayedPerceptron *MLP);
 void MLP_double_backwards(double t, MultiLayedPerceptron *MLP);
 
 void MLP_updateWeights(double learningRate, MultiLayedPerceptron *MLP);
+
+void MLP_printMLP(MultiLayedPerceptron *MLP);
