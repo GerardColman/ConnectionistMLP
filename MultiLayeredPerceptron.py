@@ -30,8 +30,6 @@ class MLP:
         self.weights_lower = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))))
         self.weights_upper = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))))
 
-    # TODO(Gerard)
-    # - Update Weights
     def forward(self, I, sin):
         self.activations_lower = np.dot(I, self.weights_lower)
         if sin:
