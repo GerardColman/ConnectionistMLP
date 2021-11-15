@@ -1,1 +1,0 @@
-gcc Main.c MLP.c -o MLP
