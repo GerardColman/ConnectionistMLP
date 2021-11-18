@@ -79,3 +79,4 @@ class MLP:
             return 1 - (np.power(self.hyperbolic_tangent(tanh), 2))
         else:
             return (2 / (1 + np.exp(tanh * -2))) - 1
+            
