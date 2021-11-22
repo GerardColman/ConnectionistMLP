@@ -27,10 +27,12 @@ class MLP:
     def randomize(self):
 
         # Initializing weights to random values
-        self.weights_lower = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))))
-        self.weights_upper = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))))
+        self.weights_lower = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))).tolist())
+        self.weights_upper = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))).tolist())
 
     def forward(self, I, sin):
+        print(type(self.weights_lower))
+        print(type(I))
         self.activations_lower = np.dot(I, self.weights_lower)
         if sin:
             self.hidden_neurons = self.hyperbolic_tangent(self.activations_lower)
