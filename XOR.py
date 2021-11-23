@@ -1,6 +1,5 @@
 import numpy as np
-from random import seed
-from random import randint
+import random
 
 from MultiLayeredPerceptron import MLP
 
@@ -17,20 +16,19 @@ learning_rate = 1
 # Pretraining testing
 for i in XOR_inputs:
     error = 0
-    NN.forward(i, False)
-    NN.backwards(target= XOR_desired_output, use_sigmoid=True)
+    NN.forward(i, True)
+    e = NN.backwards(target= XOR_desired_output, use_sigmoid=True)
     # print(f"Desired: {XOR_desired_output}")
     # print(f"Genetrated: {NN.outputs}")
 
 # Training
-# seed()
-# for e in range(max_epochs):
-#     error = 0
-#     for p in range(XOR_inputs):
-#         NN.forward(XOR_inputs[i], False)
-#         error += NN.backwards(NN.outputs)
-
-#         chance = randint(0,100)
-#         if chance >= 0 and chance <= 10:
-#             NN.update_weights(learning_rate)
-#     print(f"Error at epoch {e} is {error}")
+random.seed()
+for e in range(max_epochs):
+    error = 0
+    for i in range(len(XOR_inputs)):
+        NN.forward(XOR_inputs[i], True)
+        error += NN.backwards(NN.outputs, use_sigmoid= True)
+        chance = random.randint(0,100)
+        if chance >= 0 and chance <= 10:
+            NN.update_weights(learning_rate)
+    print(f"Error at epoch {e} is {error}")
