@@ -77,28 +77,48 @@ class MLP:
             self.outputs[i] = output
     
     def backwards(self, target, use_sigmoid):
-        output_delta = [0.0] * self.number_of_outputs
+        # output_delta = [0.0] * self.number_of_outputs
         hidden_delta = [0.0] * self.number_of_hidden_units
 
-        # Computing Output Delta
-        for i in range(self.number_of_outputs):
-            err = target[i] - self.outputs[i]
-            if use_sigmoid:
-                output_delta[i] = self.sigmoid(self.outputs[i]) * err
-            else:
-                output_delta[i] = self.sigmoid(self.outputs[i]) * err
-        # print(str(output_delta))
+        # # Computing Output Delta
+        # for i in range(self.number_of_outputs):
+        #     err = target[i] - self.outputs[i]
+        #     if use_sigmoid:
+        #         output_delta[i] = self.sigmoid(self.activations_lower[i]) * err
+        #     else:
+        #         output_delta[i] = self.sigmoid(self.activations_lower[i]) * err
+        # # print(str(output_delta))
 
-        # Computing Hidden Delta
-        for i in range(self.number_of_hidden_units):
-            error = 0.0
-            for j in range(self.number_of_outputs):
-                error += output_delta[j] * self.weights_lower[i][j]
-                self.weight_changes_lower[i][j] = output_delta[j] * self.hidden_neurons[i]
+        # # Computing Hidden Delta
+        # for i in range(self.number_of_hidden_units):
+        #     error = 0.0
+        #     for j in range(self.number_of_outputs):
+        #         error += output_delta[j] * self.weights_lower[i][j]
+        #         self.weight_changes_lower[i][j] = output_delta[j] * self.hidden_neurons[i]
+        #     if use_sigmoid:
+        #         hidden_delta[i] = self.sigmoid(self.activations_upper[i]) * err
+        #     else:
+        #         hidden_delta[i] = self.sigmoid(self.activations_upper[i]) * err
+        for i in range(0,self.number_of_hidden_units):
+            err = 0
+            for j in range(0, self.number_of_outputs):
+                if use_sigmoid:
+                    curr_delta = self.sigmoid(self.outputs[j], True) * (target[j] - self.outputs[j])
+                else:
+                    curr_delta = self.hyperbolic_tangent(self.outputs[j], True) * (target[j] - self.outputs[j])
+                err += curr_delta * self.weights_upper[i][j]
+                self.weight_changes_upper[i][j] = curr_delta * self.hidden_neurons[i]
             if use_sigmoid:
-                hidden_delta[i] = self.sigmoid(self.hidden_neurons[i]) * err
+                hidden_delta[i] = self.sigmoid(self.hidden_neurons[i], True) * err
             else:
-                hidden_delta[i] = self.sigmoid(self.hidden_neurons[i]) * err
+                hidden_delta[i] = self.hyperbolic_tangent(self.hidden_neurons[i], True) * err
+        
+        for i in range(0, self.number_of_inputs):
+            for j in range(0, self.number_of_hidden_units):
+                self.weight_changes_lower[i][j] = hidden_delta[j] * self.input_neurons[i]
+        
+        return np.mean(np.abs(np.subtract(target, self.outputs)))
+
 
     def update_weights(self, learning_rate):
         self.weights_lower = np.add(self.weights_lower, learning_rate * self.weight_changes_lower)
