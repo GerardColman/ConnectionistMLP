@@ -3,7 +3,7 @@ import numpy as np
 from MultiLayeredPerceptron import MLP
 
 NN = MLP(2, 4, 1)
-NN.randomize
+NN.randomize()
 
 XOR_inputs = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 XOR_desired_output = np.array([[0], [1], [1], [0]])
