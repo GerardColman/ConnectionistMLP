@@ -18,8 +18,8 @@ for i in XOR_inputs:
     error = 0
     NN.forward(i, True)
     e = NN.backwards(target= XOR_desired_output, use_sigmoid=True)
-    # print(f"Desired: {XOR_desired_output}")
-    # print(f"Genetrated: {NN.outputs}")
+    print(f"Desired: {XOR_desired_output}")
+    print(f"Genetrated: {NN.outputs}")
 
 # Training
 random.seed()
@@ -30,5 +30,7 @@ for e in range(max_epochs):
         error += NN.backwards(NN.outputs, use_sigmoid= True)
         chance = random.randint(0,100)
         if chance >= 0 and chance <= 10:
-            NN.update_weights(learning_rate)
+            # TODO(Gerard): Fix update weights function
+            # NN.update_weights(learning_rate)
+            print("Update Weights!")
     print(f"Error at epoch {e} is {error}")
