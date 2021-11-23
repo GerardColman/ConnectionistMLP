@@ -1,5 +1,5 @@
 import numpy as np
-import sys
+import random as rand
 
 
 class MLP:
@@ -10,10 +10,14 @@ class MLP:
     
     weights_lower = [] # W1 (Output)
     weights_upper = [] # W2 (Input)
+
     weight_changes_lower = [] # dw1
     weight_changes_upper = [] # dw2
+
     activations_lower = [] # z1 (Output)
     activations_upper = [] # z2 (Input)
+
+    input_neurons = []
     hidden_neurons = [] # h
     outputs = [] # o
 
@@ -22,25 +26,52 @@ class MLP:
         self.number_of_hidden_units = num_hidden
         self.number_of_outputs = num_output
 
-        # Setting weight change arrays to 0
-        self.weight_changes_lower = np.full((self.number_of_inputs, self.number_of_hidden_units), 0)
-        self.weight_changes_upper = np.full((self.number_of_inputs, self.number_of_hidden_units), 0)
+
+        # Initialize weight arrays and weight_change arrays to correct size
+        self.weights_upper = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+        self.weights_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+
+        # Also sets weight change arrays to 0
+        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+        self.weight_changes_upper = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+
 
     def randomize(self):
-
+        rand.seed()
+        
         # Initializing weights to random values
-        self.weights_lower = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))).tolist())
-        self.weights_upper = np.array((np.random.uniform(0.0, 1, (self.number_of_inputs, self.number_of_hidden_units))).tolist())
+        for i in range(self.number_of_inputs):
+            for j in range(self.number_of_hidden_units):
+                self.weights_lower[i][j] = rand.uniform(0.0, 1.0)
+                self.weights_upper[i][j] = rand.uniform(0.0, 1.0)
+        # print(self.weights_lower)
+        # print(self.weights_upper)
 
-    def forward(self, I, sin):
-        input_neurons = I
+    def forward(self, Input, sigmoid):
         for i in range(self.number_of_inputs - 1):
-            input_neurons = I[i]
+            self.input_neurons[i] = Input[i]
 
         for i in range(self.number_of_hidden_units):
-            h = 0.0
+            hidden = 0.0
             for j in range(self.number_of_inputs):
-                h += input_neurons[j] * self.weights_upper[j][i]
+                hidden += self.input_neurons[j] * self.weights_upper[j][i]
+            if sigmoid == True:
+                hidden = self.sigmoid(hidden)
+            else:
+                hidden = self.hyperbolic_tangent(hidden)
+            self.hidden_neurons[i] = hidden
+
+        for i in range(self.number_of_outputs):
+            output_sum = 0.0
+            for j in range(self.number_of_hidden_units):
+                output_sum += self.hidden_neurons[j] * self.outputs[j][i]
+            
+            if sigmoid == True:
+                output_sum = self.sigmoid(output_sum)
+            else:
+                output_sum = self.hyperbolic_tangent(output_sum)
+            self.outputs[i] = output_sum
+
         # self.activations_lower = np.dot(I, self.weights_lower)
         # if sin:
         #     self.hidden_neurons = self.hyperbolic_tangent(self.activations_lower)
@@ -56,6 +87,9 @@ class MLP:
     
     def backwards(self, T, target, sin):
         err = np.subtract(target, self.outputs)
+        
+        for i in range(self.outputs):
+            err[i] = target[i] - self.outputs[i]
 
         if sin:
             activation_lower_layer = self.hyperbolic_tangent(self.activations_lower)
@@ -90,4 +124,4 @@ class MLP:
             return 1 - (np.power(self.hyperbolic_tangent(tanh), 2))
         else:
             return (2 / (1 + np.exp(tanh * - 2))) - 1
-            
+                
