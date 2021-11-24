@@ -90,7 +90,7 @@ class MLP:
             if use_sigmoid:
                 output_delta[i] = self.sigmoid(self.outputs[i], True) * err
             else:
-                output_delta[i] = self.sigmoid(self.activations_lower[i], True) * err
+                output_delta[i] = self.sigmoid(self.outputs[i], True) * err
         # print(str(output_delta))
 
         # Computing Hidden Delta
