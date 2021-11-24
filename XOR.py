@@ -10,7 +10,7 @@ NN.randomize()
 # Declaring input, output, max_epochs, and learning rate
 XOR_inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
 XOR_desired_output = [[0], [1], [1], [0]]
-max_epochs = 500
+max_epochs = 5
 learning_rate = 1
 
 # Pretraining testing
@@ -33,4 +33,5 @@ for e in range(max_epochs):
             # TODO(Gerard): Fix update weights function
             # NN.update_weights(learning_rate)
             print("Update Weights!")
-    print(f"Error at epoch {e} is {error}")
+    print(f"{NN.weight_changes_lower}, {NN.weight_changes_upper}")
+    # print(f"Error at epoch {e} is {error}")
