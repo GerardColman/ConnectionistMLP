@@ -1,5 +1,6 @@
-import numpy as np
 import random
+
+import numpy as np
 
 from MultiLayeredPerceptron import MLP
 
@@ -17,9 +18,9 @@ learning_rate = 1
 for i in XOR_inputs:
     error = 0
     NN.forward(i, True)
-    e = NN.backwards(target= XOR_desired_output, use_sigmoid=True)
-    print(f"Desired: {XOR_desired_output}")
-    print(f"Genetrated: {NN.outputs}")
+    # e = NN.backwards(target= XOR_desired_output, use_sigmoid=True)
+    # print(f"Desired: {XOR_desired_output}")
+    # print(f"Genetrated: {NN.outputs}")
 
 # Training
 random.seed()
@@ -27,11 +28,11 @@ for e in range(max_epochs):
     error = 0
     for i in range(len(XOR_inputs)):
         NN.forward(XOR_inputs[i], True)
-        error += NN.backwards(NN.outputs, use_sigmoid= True)
+        error += NN.backwards(XOR_desired_output[i], use_sigmoid= True)
         chance = random.randint(0,100)
-        if chance >= 0 and chance <= 10:
+        # if chance >= 0 and chance <= 10:
             # TODO(Gerard): Fix update weights function
             # NN.update_weights(learning_rate)
-            print("Update Weights!")
+            # print("Update Weights!")
     print(f"{NN.weight_changes_lower}, {NN.weight_changes_upper}")
-    # print(f"Error at epoch {e} is {error}")
+    print(f"Error at epoch {e} is {error}")

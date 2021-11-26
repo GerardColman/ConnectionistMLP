@@ -1,5 +1,7 @@
-import numpy as np
+import math
 import random as rand
+
+import numpy as np
 
 
 class MLP:
@@ -87,17 +89,19 @@ class MLP:
         # Computing Output Delta
         for i in range(self.number_of_outputs):
             err = target[i] - self.outputs[i]
+            # print(self.outputs[i])
             if use_sigmoid:
                 output_delta[i] = self.sigmoid(self.outputs[i], True) * err
             else:
                 output_delta[i] = self.sigmoid(self.outputs[i], True) * err
-        # print(str(output_delta))
+        # print(f"output_delta[i] = " + str(output_delta))
 
         # Computing Hidden Delta
         for i in range(self.number_of_hidden_units):
             error = 0.0
             for j in range(self.number_of_outputs-1):
                 error += output_delta[j] * self.weights_lower[i][j]
+                # print(f"output delta: {output_delta[j]}, hidden_neuron: {self.hidden_neurons[i]}")
                 self.weight_changes_lower[i][j] = output_delta[j] * self.hidden_neurons[i]
         if use_sigmoid:
             hidden_delta[i] = self.sigmoid(self.activations_lower[i], True) * err
@@ -109,6 +113,9 @@ class MLP:
                 self.weight_changes_upper[i][j] = hidden_delta[j] * self.input_neurons[i]
         
         return np.mean(np.abs(np.subtract(target, self.outputs)))
+        
+
+            
 
 
 
@@ -127,9 +134,9 @@ class MLP:
 
     def sigmoid(self, sig, is_backward=False):
         if is_backward:
-            return np.exp(-sig) / (1 + np.exp(-sig)) ** 2
+            return (1.0 / 1.0 + math.exp(-sig)) * (1-(1.0 / 1.0 + math.exp(-sig)))
         else:
-            return 1 / (1 + np.exp(-sig))
+            return 1.0 / 1.0 + math.exp(-sig)
 
     def hyperbolic_tangent(self, tanh, is_backward=False):
         if is_backward:
