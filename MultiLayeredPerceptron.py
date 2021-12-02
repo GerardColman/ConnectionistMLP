@@ -114,13 +114,36 @@ class MLP:
         
         return np.mean(np.abs(np.subtract(target, self.outputs)))
         
+    def backwardsEanna(self, target, use_sigmoid):
+        hidden_delta = [0.0] * self.number_of_hidden_units
 
+        for i in range(self.number_of_hidden_units):
+            err = 0
+
+            for j in range(self.number_of_outputs):
+                if use_sigmoid:
+                    currentDelta = self.sigmoid(self.outputs[j], True) * (target[j] - self.outputs[j])
+                else:
+                    currentDelta = self.hyperbolic_tangent(self.outputs[j], True) * (target[j] - self.outputs[j])
+                
+                err += currentDelta * self.weights_lower[j][i] # Calculating Error
+                self.weight_changes_lower[j][i] = currentDelta * self.hidden_neurons[i] # Calculating upper layer weight changes
             
+            if use_sigmoid:
+                hidden_delta[i] = self.sigmoid(self.hidden_neurons[i], True) * err
+            else:
+                hidden_delta[i] = self.hyperbolic_tangent(self.hidden_neurons[i], True) * err
+        
+        for i in range(self.number_of_inputs):
+            for j in range(self.number_of_hidden_units):
+                print(self.input_neurons)
+                self.weight_changes_upper[i][j] = hidden_delta[j] * self.input_neurons[i]
 
+        return np.mean(np.abs(np.subtract(target, self.outputs)))
 
 
     def update_weights(self, learning_rate):
-        print("awadwa")
+        print("In update weights")
         for i in range(self.number_of_hidden_units):
             for j in range(self.number_of_outputs):
                 self.weights_lower[i][j] += self.weight_changes_lower[i][j] * learning_rate

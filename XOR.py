@@ -28,11 +28,11 @@ for e in range(max_epochs):
     error = 0
     for i in range(len(XOR_inputs)):
         NN.forward(XOR_inputs[i], True)
-        error += NN.backwards(XOR_desired_output[i], use_sigmoid= True)
+        error += NN.backwardsEanna(XOR_desired_output[i], use_sigmoid= True)
         chance = random.randint(0,100)
-        # if chance >= 0 and chance <= 10:
+        if chance >= 0 and chance <= 10:
             # TODO(Gerard): Fix update weights function
             # NN.update_weights(learning_rate)
-            # print("Update Weights!")
-    print(f"{NN.weight_changes_lower}, {NN.weight_changes_upper}")
+            print("Update Weights!")
+    # print(f"{NN.weight_changes_upper}")
     print(f"Error at epoch {e} is {error}")
