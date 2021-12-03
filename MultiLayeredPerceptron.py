@@ -1,4 +1,5 @@
 import math
+import statistics as stat
 import random as rand
 
 import numpy as np
@@ -35,26 +36,33 @@ class MLP:
         self.activations_lower = [0]*num_hidden
         self.activations_upper = [0]*num_output
 
-        # Initialize weight arrays and weight_change arrays to correct size
-        self.weights_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
-        self.weights_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
-
-        # Also sets weight change arrays to 0
-        self.weight_changes_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
-        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+        self.weights_upper = [] # Hidden x Output
+        self.weights_lower = [] # Inputs x Hidden
+        self.weight_changes_upper = [] # Hidden x Output
+        self.weight_changes_lower = [] # Inputs x Hidden
 
     def randomize(self):
-        rand.seed()
+        rand.seed(1)
         
         # Initializing weights to random values
-        for i in range(self.number_of_hidden_units):
-            for j in range(self.number_of_outputs):
-                self.weights_upper[i][j] = rand.uniform(0.0, 1.0)
+        for i in range(0, self.number_of_hidden_units):
+            temp = []
+            temp2 = []
+            for j in range(0, self.number_of_outputs):
+                temp.append(rand.uniform(0,1))
+                temp2.append(0)
+            self.weight_changes_upper.append(temp2)
+            self.weights_upper.append(temp)
 
         # Initializing weights to random values
         for i in range(self.number_of_inputs):
+            temp = []
+            temp2 = []
             for j in range(self.number_of_hidden_units):
-                self.weights_lower[i][j] = rand.uniform(0.0, 1.0)
+                temp.append(rand.uniform(0,1))
+                temp2.append(0)
+            self.weight_changes_lower.append(temp2)
+            self.weights_lower.append(temp)
 
     def forward(self, Input, use_sigmoid):
         self.input_neurons = Input
@@ -132,29 +140,51 @@ class MLP:
             for j in range(self.number_of_hidden_units):
                 self.weight_changes_lower[i][j] = hidden_delta[j] * self.input_neurons[i]
 
-        return np.mean(np.abs(np.subtract(target, self.outputs)))
+        # print("Target: " + str(target))
+        # print("outputs: " + str(self.outputs))
+        return self.GetError(target)
+
     
     def update_weights(self, learning_rate):
         for i in range(self.number_of_inputs):
             for j in range(self.number_of_hidden_units):
                 self.weights_lower[i][j] += self.weight_changes_lower[i][j] * learning_rate
+                self.weight_changes_lower[i][j] = 0
 
         for i in range(self.number_of_hidden_units):
             for j in range(self.number_of_outputs):
                 self.weights_upper[i][j] += self.weight_changes_upper[i][j] * learning_rate
-
-        self.weight_changes_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
-        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
+                self.weight_changes_upper[i][j] = 0
 
     def sigmoid(self, sig, is_backward=False):
         if is_backward:
-            return (1.0 / 1.0 + math.exp(-sig)) * (1-(1.0 / 1.0 + math.exp(-sig)))
+            return sig * (1-sig)
         else:
-            return 1.0 / 1.0 + math.exp(-sig)
+            return 1.0 / (1.0 + math.exp(-sig))
 
     def hyperbolic_tangent(self, tanh, is_backward=False):
         if is_backward:
             return 1 - (np.power(self.hyperbolic_tangent(tanh), 2))
         else:
             return (2 / (1 + np.exp(tanh * - 2))) - 1
-                
+
+    def GetError(self, target):
+        error = 0
+        for n in range(0, self.number_of_outputs):
+            error += ((target[n] - self.outputs[n]) ** 2) / 2
+        return error
+           
+    def toString(self, epoch_number):
+        print(f"Epoch Number: {epoch_number}")
+        print("--WEIGHTS--")
+        print(f"lower-weights: {self.weights_lower}")
+        print(f"upper-weights: {self.weights_upper}")
+        print("--WEIGHT UPDATES--")
+        print(f"lower-weight-changes: {self.weight_changes_lower}")
+        print(f"upper-weight-changes: {self.weight_changes_upper}")
+        print("--INPUT--")
+        print(f"input: {self.input_neurons}")
+        print("--HIDDEN NEURONS--")
+        print(f"hidden: {self.hidden_neurons}")
+        print("--OUTPUT--")
+        print(f"input: {self.outputs}")
