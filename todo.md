@@ -1,5 +1,4 @@
-- Change forward prop to Eannas code to check it works
-- Backwards
-    - Error converges on 2 (ask)
-    - In function should I change weight lower or weight upper first?
-        - CHECK MATHS
+- Backwards prop converges on 2
+- Testing producing wrong outputs
+    - Settings thing?
+    - Code logic thing?

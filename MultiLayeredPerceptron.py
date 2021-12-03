@@ -36,34 +36,55 @@ class MLP:
         self.activations_upper = [0]*num_output
 
         # Initialize weight arrays and weight_change arrays to correct size
-        self.weights_upper = [[0]*self.number_of_hidden_units]*self.number_of_inputs
-        self.weights_lower = [[0]*self.number_of_hidden_units]*self.number_of_outputs
+        self.weights_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
+        self.weights_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
 
         # Also sets weight change arrays to 0
-        self.weight_changes_upper = [[0]*self.number_of_hidden_units]*self.number_of_inputs
-        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_outputs
+        self.weight_changes_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
+        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
 
     def randomize(self):
         rand.seed()
         
         # Initializing weights to random values
-        for i in range(self.number_of_inputs):
-            for j in range(self.number_of_hidden_units):
+        for i in range(self.number_of_hidden_units):
+            for j in range(self.number_of_outputs):
                 self.weights_upper[i][j] = rand.uniform(0.0, 1.0)
 
         # Initializing weights to random values
-        for i in range(self.number_of_outputs):
+        for i in range(self.number_of_inputs):
             for j in range(self.number_of_hidden_units):
                 self.weights_lower[i][j] = rand.uniform(0.0, 1.0)
 
-    def forwardEanna(self, Input, sigmoid):
+    def forward(self, Input, use_sigmoid):
         self.input_neurons = Input
         
+        for i in range(self.number_of_hidden_units):
+            neuron_activation = 0
+            for j in range(self.number_of_inputs):
+                neuron_activation += self.input_neurons[j] * self.weights_lower[j][i]
+            if use_sigmoid:
+                neuron_activation = self.sigmoid(neuron_activation)
+            else:
+                neuron_activation = self.hyperbolic_tangent(neuron_activation)
+            self.activations_lower[i] = neuron_activation # NOTE: THIS MIGHT GO WRONG
+            self.hidden_neurons[i] = neuron_activation
+
         for i in range(self.number_of_outputs):
+            output_activation = 0
             for j in range(self.number_of_hidden_units):
+                output_activation += self.hidden_neurons[j] * self.weights_upper[j][i]
+            if use_sigmoid:
+                output_activation = self.sigmoid(output_activation)
+            else:
+                output_activation = self.hyperbolic_tangent(output_activation)
+            self.activations_upper[i] = output_activation # NOTE: THIS MIGHT GO WRONG
+            self.outputs[i] = output_activation
+        
+        return 0
 
 
-    def forward(self, Input, sigmoid):
+    def forwardOLD(self, Input, sigmoid):
         for i in range(self.number_of_inputs - 1):
             self.input_neurons[i] = Input[i]
 
@@ -92,16 +113,15 @@ class MLP:
     def backwards(self, target, use_sigmoid):
         hidden_delta = [0.0] * self.number_of_hidden_units
 
-        for i in range(self.number_of_outputs):
+        for i in range(self.number_of_hidden_units):
             err = 0
-            for j in range(self.number_of_hidden_units):
+            for j in range(self.number_of_outputs):
                 if use_sigmoid:
-                    currentDelta = self.sigmoid(self.outputs[i], True) * (target[i] - self.outputs[i])
+                    currentDelta = self.sigmoid(self.outputs[j], True) * (target[j] - self.outputs[j])
                 else:
-                    currentDelta = self.hyperbolic_tangent(self.outputs[i], True) * (target[i] - self.outputs[i])
-                
-                err += currentDelta * self.weights_lower[i][j] # Calculating Error
-                self.weight_changes_lower[i][j] = currentDelta * self.hidden_neurons[j] # Calculating upper layer weight changes
+                    currentDelta = self.hyperbolic_tangent(self.outputs[j], True) * (target[j] - self.outputs[j])
+                err += currentDelta * self.weights_upper[i][j] # Calculating Error
+                self.weight_changes_upper[i][j] = currentDelta * self.hidden_neurons[i] # Calculating upper layer weight changes
             
             if use_sigmoid:
                 hidden_delta[i] = self.sigmoid(self.hidden_neurons[i], True) * err
@@ -110,22 +130,21 @@ class MLP:
         
         for i in range(self.number_of_inputs):
             for j in range(self.number_of_hidden_units):
-                self.weight_changes_upper[i][j] = hidden_delta[j] * self.input_neurons[i]
+                self.weight_changes_lower[i][j] = hidden_delta[j] * self.input_neurons[i]
 
         return np.mean(np.abs(np.subtract(target, self.outputs)))
-
-
+    
     def update_weights(self, learning_rate):
-        for i in range(self.number_of_outputs):
+        for i in range(self.number_of_inputs):
             for j in range(self.number_of_hidden_units):
                 self.weights_lower[i][j] += self.weight_changes_lower[i][j] * learning_rate
 
-        for i in range(self.number_of_inputs):
-            for j in range(self.number_of_hidden_units):
+        for i in range(self.number_of_hidden_units):
+            for j in range(self.number_of_outputs):
                 self.weights_upper[i][j] += self.weight_changes_upper[i][j] * learning_rate
 
-        self.weight_changes_upper = [[0]*self.number_of_hidden_units]*self.number_of_inputs
-        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_outputs
+        self.weight_changes_upper = [[0]*self.number_of_outputs]*self.number_of_hidden_units
+        self.weight_changes_lower = [[0]*self.number_of_hidden_units]*self.number_of_inputs
 
     def sigmoid(self, sig, is_backward=False):
         if is_backward:

@@ -1,7 +1,12 @@
-x = 10
-y = 2
+import MultiLayeredPerceptron as MLP
 
+NN = MLP(2, 4, 1)
+NN.randomize()
 
-arr = [[0]*x]*y
+# Declaring input, output, max_epochs, and learning rate
+XOR_inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
+XOR_desired_output = [[0], [1], [1], [0]]
+max_epochs = 100
+learning_rate = 1
 
-print(arr[0])
+NN.fo
