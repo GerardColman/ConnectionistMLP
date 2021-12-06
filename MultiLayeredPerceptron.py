@@ -164,9 +164,11 @@ class MLP:
 
     def hyperbolic_tangent(self, tanh, is_backward=False):
         if is_backward:
-            return 1 - (np.power(self.hyperbolic_tangent(tanh), 2))
+            # print(f"derivitave: {1 - (math.tanh(tanh) ** 2)}")
+            return 1 - ((math.tanh(tanh)) ** 2)
         else:
-            return (2 / (1 + np.exp(tanh * - 2))) - 1
+            # print(f"Regular tanh: {math.tanh(tanh)}")
+            return math.tanh(tanh)
 
     def GetError(self, target):
         error = 0
