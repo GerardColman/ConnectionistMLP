@@ -90,33 +90,6 @@ class MLP:
             self.outputs[i] = output_activation
         
         return 0
-
-
-    def forwardOLD(self, Input, sigmoid):
-        for i in range(self.number_of_inputs - 1):
-            self.input_neurons[i] = Input[i]
-
-        for i in range(self.number_of_hidden_units):
-            hidden = 0.0
-            for j in range(self.number_of_inputs):
-                hidden += self.input_neurons[j] * self.weights_upper[j][i]
-            self.activations_lower[i] = hidden
-            if sigmoid:
-                hidden = self.sigmoid(self.activations_lower[i])
-            else:
-                hidden = self.hyperbolic_tangent(self.activations_lower[i])
-            self.hidden_neurons[i] = hidden
-
-        for i in range(self.number_of_outputs):
-            output = 0.0
-            for j in range(self.number_of_hidden_units):
-               output += self.hidden_neurons[j] * self.weights_lower[i][j]
-            self.activations_upper[i] = output
-            if sigmoid:
-                output = self.sigmoid(self.activations_upper[i])
-            else:
-                output = self.hyperbolic_tangent(self.activations_upper[i])
-            self.outputs[i] = output
         
     def backwards(self, target, use_sigmoid):
         hidden_delta = [0.0] * self.number_of_hidden_units

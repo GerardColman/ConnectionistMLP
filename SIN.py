@@ -10,7 +10,7 @@ SIN_Desired_Outputs = []
 max_epochs = 10000
 learning_rate = 0.1
 
-f = open("SIN.txt","w")
+f = open("SINoutput.txt","w")
 
 # Producing inputs
 random.seed()

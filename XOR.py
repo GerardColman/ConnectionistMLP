@@ -5,12 +5,13 @@ import numpy as np
 from MultiLayeredPerceptron import MLP
 
 # Opening file
-f = open("XOR.txt","w")
+f = open("XORexperiment3.txt","w")
 
 f.write("==========SETTINGS==========\n")
 f.write("Input units = 2\n")
 f.write("hidden units = 4\n")
 f.write("output units = 1\n")
+
 # Initializing the MLP
 NN = MLP(2, 4, 1)
 NN.randomize()
@@ -19,7 +20,7 @@ NN.randomize()
 XOR_inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
 XOR_desired_output = [[0], [1], [1], [0]]
 max_epochs = 10000
-learning_rate = 0.1
+learning_rate = 1
 f.write(f"max epochs = {max_epochs}\n")
 f.write(f"learning_rate = {learning_rate}\n")
 
