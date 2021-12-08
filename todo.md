@@ -1,4 +1,0 @@
-- Backwards prop converges on 2
-- Testing producing wrong outputs
-    - Settings thing?
-    - Code logic thing?
